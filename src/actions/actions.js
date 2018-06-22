@@ -27,3 +27,19 @@ export const resetGame = () =>{
         type: RESET_GAME
     }
 }
+
+export const SET_FEEDBACK = 'SET_FEEDBACK';
+export const setFeedback = (feedback) => {
+    return {
+        type: SET_FEEDBACK,
+        feedback
+    }
+}
+
+export const SET_AURAL = 'SET_AURAL';
+export const setAural = (auralStatus) => {
+    return {
+        type: SET_FEEDBACK,
+        auralStatus
+    }
+}
