@@ -1,15 +1,50 @@
 import React from 'react';
+import {connect} from 'react-redux';
+import {
+  addGuess, 
+  setFeedback 
+} from '../actions';
 
 import './guess-form.css';
 
-export default class GuessForm extends React.Component {
+export class GuessForm extends React.Component {
+  makeGuess(guess) {
+    guess = parseInt(guess, 10);
+    if (isNaN(guess)) {
+      this.props.dispatch(setFeedback('Please enter a valid number'));
+      return;
+    }
+
+    const difference = Math.abs(guess - this.props.correctAnswer);
+
+    let feedback;
+    if (difference >= 50) {
+      feedback = 'You\'re Ice Cold...';
+    } else if (difference >= 30) {
+      feedback = 'You\'re Cold...';
+    } else if (difference >= 10) {
+      feedback = 'You\'re Warm.';
+    } else if (difference >= 1) {
+      feedback = 'You\'re Hot!';
+    } else {
+      feedback = 'You got it!';
+    }
+
+    this.props.dispatch(setFeedback(feedback));
+    this.props.dispatch(addGuess(guess));
+
+    // We typically wouldn't touch the DOM directly like this in React
+    // but this is the best way to update the title of the page,
+    // which is good for giving screen-reader users
+    // instant information about the app.
+    document.title = feedback ? `${feedback} | Hot or Cold` : 'Hot or Cold';
+  }
+
   onSubmit(event) {
     event.preventDefault();
 
-    if (this.props.onMakeGuess) {
-      const value = this.input.value;
-      this.props.onMakeGuess(value);
-    }
+    const value = this.input.value;
+    this.makeGuess(value);
     this.input.value = '';
     this.input.focus();
   }
@@ -41,3 +76,9 @@ export default class GuessForm extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  correctAnswer: state.correctAnswer
+});
+
+export default connect(mapStateToProps)(GuessForm);
